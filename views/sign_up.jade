@@ -1,0 +1,58 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    |     
+    title Registration form Template | PrepBootstrap
+    |     
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    |     
+    link(rel='stylesheet', type='text/css', href='/bootstrap/css/bootstrap.min.css')
+    |     
+    link(rel='stylesheet', type='text/css', href='/font-awesome/css/font-awesome.min.css')
+    |     
+    script(type='text/javascript', src='/js/jquery-1.10.2.min.js')
+    |     
+    script(type='text/javascript', src='/bootstrap/js/bootstrap.min.js')
+  body
+    .container
+      .page-header
+        h1 Sign up
+      // Registration form - START
+      .container
+        .row
+          form(action='/signup', method='post', target='')
+            .col-lg-6
+              .form-group
+                label(for='firstname') Enter Name
+                |                     
+                .input-group
+                  input#firstname.form-control(type='text', name='firstname', placeholder='Enter Name', required='')
+                  |                         
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-asterisk
+              |                 
+              .form-group
+                label(for='email') Enter Email
+                |                     
+                .input-group
+                  input#email.form-control(type='email', name='email', placeholder='Enter Email', required='')
+                  |                         
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-asterisk
+              |               
+              |                 
+              .form-group
+                label(for='password') Enter Password
+                |                     
+                .input-group
+                  input#password.form-control(type='password', name='password', placeholder='Enter Password', required='')
+                  |                         
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-asterisk
+              |                 
+              input#submit.btn.btn-info.pull-right(type='submit', name='sign up', value='sign up')
+      // Registration form - END
+      if error
+              b=msg
+  

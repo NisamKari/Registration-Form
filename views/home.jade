@@ -1,0 +1,61 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    |     
+    title Registration form Template | PrepBootstrap
+    |     
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    |     
+    link(rel='stylesheet', type='text/css', href='/bootstrap/css/bootstrap.min.css')
+    |     
+    link(rel='stylesheet', type='text/css', href='/font-awesome/css/font-awesome.min.css')
+    |     
+    script(type='text/javascript', src='/js/jquery-1.10.2.min.js')
+    |     
+    script(type='text/javascript', src='/bootstrap/js/bootstrap.min.js')
+  body
+  if error
+    h1 Hello!       
+    h4 Welcome to my app, ready to get started?......please sign up first if you have no account        
+    .col-lg-6
+          a.btn.btn-primary(href='/login').btn.btn-info.pull-left
+            b
+              | Login now
+              b
+          a.btn.btn-primary(href='/signup').btn.btn-info.pull-right
+            b
+              | Sign Up now
+              b
+    | 
+    p
+  else
+    h3 Hello
+    h2=msg
+    .col-lg-15
+      a.btn.btn-primary.pull-right(href='/logout') log out
+    form(action='/profile', method='post', enctype='multipart/form-data')
+      input(type='file', name='pic')
+      input(type='submit', name='submit', value='Edit dp')
+    img(src=ms2)
+    form(action='/status', method='post', target='')
+      .col-lg-6
+        .form-group
+          label(for='status') Add your status                 
+          .input-group
+            textarea#status.form-control(type='text', name='status', placeholder='Enter your status', required='')
+            span.input-group-addon
+              span.glyphicon.glyphicon-asterisk    
+          input#submit.btn.btn-info.pull-right(type='submit')
+    .col-lg-10
+      form(action='/text', method='post', enctype='multipart/form-data')
+        input(type='file', name='text')
+        input.pull-center(type='submit', name='submit', value='Upload file')
+      each item in array
+        h3
+          i= item.status
+        t=item.date_time
+        if item.files
+          p
+            a(href=item.files, target='_blank')=item.files
+ 
