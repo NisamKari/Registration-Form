@@ -29,6 +29,9 @@ html
               b
     | 
     p
+  else if dpSelectError
+      a.btn.btn-primary(href='/') Back Home
+      h1=dpSelectError
   else
     h3 Hello
     h2=msg

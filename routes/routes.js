@@ -2,14 +2,14 @@ var control = require("../controller/controller");
 var multer  = require('multer');
 var connect = require("../services/database");
 var fs = require('fs');
-var joinPath = require('path.join');
+//var joinPath = require('path.join');
 
 var storage = multer.diskStorage({
   destination: function (req, file, callback) {
   	var dir = 'public/images';
 	if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-}
+    	fs.mkdirSync(dir);
+	}
     callback(null, dir)
   },
   filename: function (req, file, callback) {
@@ -19,7 +19,7 @@ var storage = multer.diskStorage({
 
 var str = multer.diskStorage({
   destination: function (req, file, callback) {
-  	var dir = joinPath('public/files/',req.session.name);
+  	var dir = 'public/files/'+ req.session.name;
 	if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
     }
@@ -29,16 +29,16 @@ var str = multer.diskStorage({
 
 var text = multer({ storage: str});
 var upload = multer({ storage: storage });
+
 module.exports = function (app) {
 	app.get('/', function(req, res) {
 			sess = req.session;
 			var status = [];
 			if (sess.email) {
-				control.getStatus(req, res, function (data) {
+				control.getStatus(req, res).then(function (data) {
 				  for(var i = 0; i < data.lenght; ++i) {
 				  		status.push(data[i].status)
 				  }
-
 		          res.render("home", {error : false, msg: sess.name, ms2: sess.path, array: data});
 		          });
 			} else {
@@ -57,11 +57,11 @@ module.exports = function (app) {
 
 
 	app.post('/signup',function(req, res) {
-		control.signup(req, res, function(isSignUp, msg) {
-			if(isSignUp) {
+		control.signup(req, res).then(function(isSignUp) {
+			if(isSignUp.condition) {
 				res.redirect("/");
 			} else {
-				res.render("sign_up", {error: true,msg: msg});
+				res.render("sign_up",{error: true, msg: isSignUp.msg});
 			}
 		}); 
 	});
@@ -77,11 +77,16 @@ module.exports = function (app) {
 
 	app.post('/profile', upload.single('pic'), function (req, res, next) {
 		sess = req.session;
-		connect.insertImage(req.file.path.slice(7),sess.email);
+		if (req.file) {
+			connect.insertImage(req.file.path.slice(7),sess.email);
 		sess.path = req.file.path.slice(7);
 		if (sess.email) {
 			res.redirect("/");
 		}	
+	} else {
+		res.render("home", {dpSelectError: 'Please select a file'});
+	}
+		
 	});
 
 	app.post('/text', text.any(), function (req, res, next) {
@@ -89,27 +94,31 @@ module.exports = function (app) {
 		connect.insertFile(sess, req.files[0].path.slice(7)); 
 		if (sess.email) {
 			res.redirect("/");
-			}
-			
-		});
+			}		
+	});
 
 
 	app.post('/status',function(req, res) {
-		control.status(req, res, function (status, msg) {
+		control.status(req, res).then(function (status) {
 			if (status) {
 				res.redirect("/");
 			} else {
-				res.render("login", {msg: msg});
+				res.render("login");
 			}
 		}); 
 	});
 
 	app.post('/login', function(req, res) {
-		control.login(req, res, function (isLogin, msg) {
-			if (isLogin) {
+		control.login(req, res).then(function (isLogin) {
+			if (isLogin.condition) {
 				res.redirect("/");
 			} else {
-				res.render("login", {error: true, msg: msg});			}
+				res.render("login", {error: true, msg: isLogin.msg});			}
+		}, function (error) {
+			if (isLogin.condition) {
+				res.redirect("/");
+			} else {
+				res.render("login", {error: true, msg: isLogin.msg});			}
 		});
 	});
 

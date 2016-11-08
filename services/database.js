@@ -1,4 +1,5 @@
-var mysql		   = 		   require("mysql");
+var mysql = require("mysql");
+var Q = require('q') ;
 
 var con = mysql.createConnection({
   host: "localhost",
@@ -7,21 +8,22 @@ var con = mysql.createConnection({
   database: "mydb"
 });
 
-function select(condition, callback) {
+function select(condition) {
+  var deferred = Q.defer()
   const query = 'SELECT * FROM users WHERE ' + condition;
   con.query(query, function(err, rows) {
     if(err) throw err;
-    callback(null, rows);
-
+    deferred.resolve(rows);
   });
+  return deferred.promise;
 }
 
-function selectStatus(callback) {
-  con.query('SELECT * FROM status',function(err, rows) {
-    if(err) throw err;
-    callback(null, rows);
-
-  });
+function selectStatus() {
+    var deferred = Q.defer()
+    con.query('SELECT * FROM status',function(err, rows) {
+      deferred.resolve(rows);
+    });
+  return deferred.promise;
 }
 
 function insert(req) {
@@ -65,11 +67,11 @@ function insertStatus(req, email_id) {
 }
 
 module.exports = {
- select: select,
- insert: insert,
- selectStatus:  selectStatus,
- insertStatus: insertStatus,
- insertFile: insertFile,
- con: con,
- insertImage: insertImage
+  select: select,
+  insert: insert,
+  selectStatus:  selectStatus,
+  insertStatus: insertStatus,
+  insertFile: insertFile,
+  con: con,
+  insertImage: insertImage
 }
